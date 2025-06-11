@@ -50,6 +50,7 @@ public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnNewGame();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnUndo();
 };
 
 #ifndef _DEBUG  // GoBangView.cpp 中的调试版本

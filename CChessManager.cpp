@@ -185,4 +185,11 @@ bool CChessManager::CheckRSlash() {
 				iCount = 0;				//连续数量置0
 	}
 	return false;
+}
+void CChessManager::Undo()
+{
+	if (m_nChess > 0) {
+		m_nChess--;
+		m_Color = (m_Color == WHITE ? BLACK : WHITE);
+	}
 } 

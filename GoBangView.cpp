@@ -31,6 +31,7 @@ BEGIN_MESSAGE_MAP(CGoBangView, CView)
 	ON_WM_RBUTTONUP()
 	ON_WM_LBUTTONDOWN()
 	ON_COMMAND(ID_NEW_GAME, &CGoBangView::OnNewGame)
+	ON_COMMAND(ID_EDIT_UNDO, &CGoBangView::OnUndo)
 	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
@@ -218,5 +219,11 @@ void CGoBangView::OnNewGame()
 	// TODO: 在此添加命令处理程序代码
 	m_chess.NewGame();
 	m_isGameOver = false;
+	Invalidate(false);
+}
+
+void CGoBangView::OnUndo()
+{
+	m_chess.Undo();
 	Invalidate(false);
 }

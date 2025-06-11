@@ -24,6 +24,7 @@ public:
 	bool Xy2Xy(int x0, int y0, int& x1, int& y1);
 	int Add(int x, int y);
 	void Show(CDC* pDC);
+	void Undo();
 	bool GameOver();
 	COLOR GetWinner();
 	CChess* GetQz(int x, int y);	//取得指定逻辑坐标的棋子，无则返回空
