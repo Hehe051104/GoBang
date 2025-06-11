@@ -29,6 +29,7 @@ BEGIN_MESSAGE_MAP(CGoBangView, CView)
 	ON_WM_RBUTTONUP()
 	ON_WM_LBUTTONDOWN()
 	ON_COMMAND(ID_NEW_GAME, &CGoBangView::OnNewGame)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 // CGoBangView 构造/析构
@@ -42,6 +43,7 @@ CGoBangView::CGoBangView() noexcept
 
 CGoBangView::~CGoBangView()
 {
+	KillTimer(1);
 }
 
 BOOL CGoBangView::PreCreateWindow(CREATESTRUCT& cs)
@@ -50,6 +52,12 @@ BOOL CGoBangView::PreCreateWindow(CREATESTRUCT& cs)
 	//  CREATESTRUCT cs 来修改窗口类或样式
 
 	return CView::PreCreateWindow(cs);
+}
+
+void CGoBangView::OnInitialUpdate()
+{
+	CView::OnInitialUpdate();
+	SetTimer(1, 1000, NULL);
 }
 
 // CGoBangView 绘图
@@ -90,6 +98,14 @@ void CGoBangView::OnDraw(CDC* pDC)
 
 	// 绘制棋子
 	m_chess.Show(pDC);
+
+	// 绘制计时器
+	CString blackTimeStr, whiteTimeStr;
+	blackTimeStr.Format(_T("黑方用时: %d s"), m_chess.GetBlackTime());
+	whiteTimeStr.Format(_T("白方用时: %d s"), m_chess.GetWhiteTime());
+	
+	pDC->TextOut(20, 20, blackTimeStr);
+	pDC->TextOut(20, 40, whiteTimeStr);
 
 	if (m_isGameOver) {
 		CString str;
@@ -180,6 +196,16 @@ void CGoBangView::OnLButtonDown(UINT nFlags, CPoint point)
 	CView::OnLButtonDown(nFlags, point);
 }
 
+void CGoBangView::OnTimer(UINT_PTR nIDEvent)
+{
+	if (nIDEvent == 1 && !m_isGameOver) {
+		m_chess.IncrementCurrentPlayerTime();
+		// 只重绘计时器区域，避免闪烁
+		CRect timerRect(20, 20, 200, 60);
+		InvalidateRect(&timerRect, FALSE);
+	}
+	CView::OnTimer(nIDEvent);
+}
 
 void CGoBangView::OnNewGame()
 {

@@ -9,6 +9,8 @@ void CChessManager::NewGame()
 {
 	m_nChess = 0;
 	m_Color = BLACK;
+	m_blackTime = 0;
+	m_whiteTime = 0;
 }
 CChessManager::~CChessManager() {
 }
@@ -37,6 +39,15 @@ int CChessManager::Add(int x, int y) { //落子，成功返回0，失败返回�
 	m_nChess++;					//落子数量加1		
 	m_Color = (m_Color == WHITE ? BLACK : WHITE);	//设置下次落子的颜色
 	return 0;					//落子成功返回0
+}
+void CChessManager::IncrementCurrentPlayerTime()
+{
+	if (m_Color == BLACK) {
+		m_blackTime++;
+	}
+	else {
+		m_whiteTime++;
+	}
 }
 void CChessManager::Show(CDC* pDC) {	//显示所有落子
 	for (int i = 0; i < m_nChess; i++)
