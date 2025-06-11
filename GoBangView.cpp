@@ -186,6 +186,7 @@ void CGoBangView::OnLButtonDown(UINT nFlags, CPoint point)
 		return;
 	}
 	if (m_chess.Add(point.x, point.y) == 0) {
+		MessageBeep(MB_OK);
 		m_pLast = point;
 		Invalidate(false);
 		if (m_chess.GameOver()) {
