@@ -1,0 +1,15 @@
+﻿  pch.cpp
+  CChess.cpp
+  CChessManager.cpp
+  ChildFrm.cpp
+  ClassView.cpp
+  FileView.cpp
+  GoBang.cpp
+  GoBangDoc.cpp
+  GoBangView.cpp
+  MainFrm.cpp
+  OutputWnd.cpp
+  PropertiesWnd.cpp
+  ViewTree.cpp
+  正在生成代码...
+  GoBang.vcxproj -> D:\github\GoBang\x64\Debug\GoBang.exe
