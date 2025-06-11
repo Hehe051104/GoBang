@@ -26,6 +26,7 @@ void CChessManager::NewGame(GameMode mode, AIDifficulty difficulty)
 	m_whiteTime = 0;
 	m_gameMode = mode;
 	m_aiDifficulty = difficulty;
+	m_Winner = NONE;
 }
 CChessManager::~CChessManager() {
 }
@@ -204,10 +205,6 @@ bool CChessManager::GameOver() {		//判断游戏是否结束
 		return true;
 	return false;
 }
-COLOR CChessManager::GetWinner()
-{
-	return m_nChess > 0 ? m_aChess[m_nChess - 1].GetColor() : BLACK;
-}
 CChess* CChessManager::GetQz(int x, int y) {	//根据逻辑坐标取得棋子，失败返回空
 	if (x < 0 || x >= MAX_COLS || y < 0 || y >= MAX_ROWS) {
 		return nullptr;
@@ -233,7 +230,10 @@ bool CChessManager::CheckRows() {
 				else if (color == pQz->GetColor()) {
 					iCount++;			//已连续数量加1
 					if (iCount == WIN_NUM)			//已达到获胜数
+					{
+						m_Winner = color;
 						return true;			//游戏结束
+					}
 				}
 				else {						//新颜色棋子
 					color = pQz->GetColor();		//保存颜色
@@ -260,7 +260,10 @@ bool CChessManager::CheckCols() {					//按列方向检查
 				else if (color == pQz->GetColor()) {	//是同色连续棋子
 					iCount++;			//已连续数量加1
 					if (iCount == WIN_NUM)			//已达到获胜数量
+					{
+						m_Winner = color;
 						return true;			//游戏结束
+					}
 				}
 				else {						//新颜色棋子
 					color = pQz->GetColor();		//保存颜色
@@ -287,7 +290,10 @@ bool CChessManager::CheckLSlash() {		//检查左斜线 '\'方向
 				else if (color == pQz->GetColor()) {	//是同色连续棋子
 					iCount++;		//已连续数量加1
 					if (iCount == WIN_NUM)		//已达到获胜数量
+					{
+						m_Winner = color;
 						return true;		//游戏结束
+					}
 				}
 				else {					//新颜色棋子
 					color = pQz->GetColor();	//保存颜色
@@ -314,7 +320,10 @@ bool CChessManager::CheckRSlash() {
 				else if (color == pQz->GetColor()) {	//是同色连续棋子
 					iCount++;		//已连续数量加1
 					if (iCount == WIN_NUM)		//已达到获胜数量
-						return true;
+					{
+						m_Winner = color;
+						return true;		//游戏结束
+					}
 				}
 				else {					//新颜色棋子
 					color = pQz->GetColor();	//保存颜色

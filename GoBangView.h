@@ -39,6 +39,7 @@ protected:
 	CChessManager m_chess;
 	bool m_isGameOver;
 	CPoint m_pLast;
+	void HandleGameOver();
 
 // 生成的消息映射函数
 protected:

@@ -17,6 +17,7 @@ class CChessManager {
 	int m_whiteTime;		//白方用时，单位：秒
 	GameMode m_gameMode;	//游戏模式
 	AIDifficulty m_aiDifficulty; // AI难度
+	COLOR m_Winner; // 胜利方
 	long GetScore(int x, int y, COLOR color); // AI评分函数
 	bool CheckRows();				//检查行是否达到赢棋标准
 	bool CheckCols();				//检查列是否达到赢棋标准
@@ -33,7 +34,7 @@ public:
 	void Undo();
 	void AIMove();
 	bool GameOver();
-	COLOR GetWinner();
+	COLOR GetWinner() { return m_Winner; };
 	CChess* GetQz(int x, int y);	//取得指定逻辑坐标的棋子，无则返回空
 	int GetBlackTime() { return m_blackTime; }	//获取黑方用时
 	int GetWhiteTime() { return m_whiteTime; }	//获取白方用时

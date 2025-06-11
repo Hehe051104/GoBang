@@ -10,6 +10,7 @@
 
 #include "GoBangDoc.h"
 #include "GoBangView.h"
+#include "CChess.h"
 #include <mmsystem.h>
 #pragma comment(lib, "winmm.lib")
 
@@ -132,14 +133,6 @@ void CGoBangView::OnDraw(CDC* pDC)
 		int blackWidth = (int)(200.0 * blackScore / totalScore);
 		pDC->FillSolidRect(CRect(20, 70, 20 + blackWidth, 90), RGB(0, 0, 0));
 	}
-
-	if (m_isGameOver) {
-		CString str;
-		str.Format(_T("%s win!\n\nFinal Score:\nBlack: %ld\nWhite: %ld"), 
-			m_chess.GetWinner() == BLACK ? _T("Black") : _T("White"),
-			blackScore, whiteScore);
-		MessageBox(str);
-	}
 }
 
 
@@ -210,7 +203,7 @@ void CGoBangView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	if (m_isGameOver) {
-		MessageBox(_T("Game over!"));
+		HandleGameOver();
 		return;
 	}
 	if (m_chess.Add(point.x, point.y) == 0) {
@@ -219,7 +212,8 @@ void CGoBangView::OnLButtonDown(UINT nFlags, CPoint point)
 		Invalidate(false);
 		if (m_chess.GameOver()) {
 			m_isGameOver = true;
-			Invalidate(false);
+			Invalidate(false); // 绘制最后一个棋子
+			HandleGameOver();
 			return; // 游戏结束，AI不再走棋
 		}
 
@@ -228,7 +222,8 @@ void CGoBangView::OnLButtonDown(UINT nFlags, CPoint point)
 			Invalidate(false);
 			if (m_chess.GameOver()) {
 				m_isGameOver = true;
-				Invalidate(false);
+				Invalidate(false); // 绘制最后一个棋子
+				HandleGameOver();
 			}
 		}
 	}
@@ -298,4 +293,33 @@ void CGoBangView::OnUpdateDifficultyMedium(CCmdUI* pCmdUI)
 void CGoBangView::OnUpdateDifficultyHard(CCmdUI* pCmdUI)
 {
 	pCmdUI->SetRadio(m_chess.GetDifficulty() == HARD);
+}
+
+void CGoBangView::HandleGameOver()
+{
+	long blackScore, whiteScore;
+	m_chess.GetBoardScore(blackScore, whiteScore);
+
+	CString str;
+	CString winnerStr = _T("Unknown");
+	if (m_chess.GetWinner() != NONE)
+	{
+		winnerStr.Format(_T("%s win!"), m_chess.GetWinner() == BLACK ? _T("Black") : _T("White"));
+	}
+	
+	str.Format(_T("%s\n\nFinal Score:\nBlack: %ld\nWhite: %ld\n\nDo you want to play again?"),
+		winnerStr,
+		blackScore, whiteScore);
+
+	if (MessageBox(str, _T("Game Over"), MB_YESNO) == IDYES)
+	{
+		if (m_chess.GetGameMode() == PVE)
+		{
+			OnNewGameAI();
+		}
+		else
+		{
+			OnNewGame();
+		}
+	}
 }

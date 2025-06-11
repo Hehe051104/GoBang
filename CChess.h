@@ -3,7 +3,7 @@
 // MFC GDI anviert Klasse
 class CDC;
 
-enum COLOR { BLACK, WHITE };			//棋子只有两种颜色
+enum COLOR { NONE, BLACK, WHITE };			//棋子只有两种颜色
 class CChess {
 	int m_Num;				//序号
 	int m_x;				//棋子位置x坐标
