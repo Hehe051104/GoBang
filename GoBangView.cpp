@@ -10,6 +10,8 @@
 
 #include "GoBangDoc.h"
 #include "GoBangView.h"
+#include <mmsystem.h>
+#pragma comment(lib, "winmm.lib")
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -43,6 +45,7 @@ CGoBangView::CGoBangView() noexcept
 
 CGoBangView::~CGoBangView()
 {
+	mciSendString(_T("close bgm"), NULL, 0, NULL);
 	KillTimer(1);
 }
 
@@ -58,6 +61,8 @@ void CGoBangView::OnInitialUpdate()
 {
 	CView::OnInitialUpdate();
 	SetTimer(1, 1000, NULL);
+	mciSendString(_T("open res/background.mp3 alias bgm"), NULL, 0, NULL);
+	mciSendString(_T("play bgm repeat"), NULL, 0, NULL);
 }
 
 // CGoBangView 绘图
