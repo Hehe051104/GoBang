@@ -31,6 +31,7 @@ BEGIN_MESSAGE_MAP(CGoBangView, CView)
 	ON_WM_RBUTTONUP()
 	ON_WM_LBUTTONDOWN()
 	ON_COMMAND(ID_NEW_GAME, &CGoBangView::OnNewGame)
+	ON_COMMAND(ID_NEW_GAME_AI, &CGoBangView::OnNewGameAI)
 	ON_COMMAND(ID_EDIT_UNDO, &CGoBangView::OnUndo)
 	ON_WM_TIMER()
 END_MESSAGE_MAP()
@@ -198,6 +199,16 @@ void CGoBangView::OnLButtonDown(UINT nFlags, CPoint point)
 		if (m_chess.GameOver()) {
 			m_isGameOver = true;
 			Invalidate(false);
+			return; // 游戏结束，AI不再走棋
+		}
+
+		if (m_chess.GetGameMode() == PVE) {
+			m_chess.AIMove();
+			Invalidate(false);
+			if (m_chess.GameOver()) {
+				m_isGameOver = true;
+				Invalidate(false);
+			}
 		}
 	}
 	CView::OnLButtonDown(nFlags, point);
@@ -222,8 +233,18 @@ void CGoBangView::OnNewGame()
 	Invalidate(false);
 }
 
+void CGoBangView::OnNewGameAI()
+{
+	m_chess.NewGame(PVE);
+	m_isGameOver = false;
+	Invalidate(false);
+}
+
 void CGoBangView::OnUndo()
 {
 	m_chess.Undo();
+	if (m_chess.GetGameMode() == PVE) {
+		m_chess.Undo(); // 在PVE模式下，悔棋需要撤销两步（玩家和AI）
+	}
 	Invalidate(false);
 }

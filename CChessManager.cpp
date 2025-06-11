@@ -5,12 +5,13 @@
 CChessManager::CChessManager() {
 	NewGame();
 }
-void CChessManager::NewGame()
+void CChessManager::NewGame(GameMode mode)
 {
 	m_nChess = 0;
 	m_Color = BLACK;
 	m_blackTime = 0;
 	m_whiteTime = 0;
+	m_gameMode = mode;
 }
 CChessManager::~CChessManager() {
 }
@@ -40,6 +41,52 @@ int CChessManager::Add(int x, int y) { //落子，成功返回0，失败返回�
 	m_Color = (m_Color == WHITE ? BLACK : WHITE);	//设置下次落子的颜色
 	return 0;					//落子成功返回0
 }
+
+void CChessManager::AIMove()
+{
+	if (m_gameMode == PVE)
+	{
+		long maxScore = -1;
+		int bestX = -1, bestY = -1;
+
+		for (int y = 0; y < MAX_ROWS; y++)
+		{
+			for (int x = 0; x < MAX_COLS; x++)
+			{
+				if (GetQz(x, y) == nullptr) // 只在空位评估
+				{
+					long aiScore = GetScore(x, y, m_Color);
+					long playerScore = GetScore(x, y, (m_Color == WHITE ? BLACK : WHITE));
+					long totalScore = aiScore + playerScore;
+
+					if (totalScore > maxScore)
+					{
+						maxScore = totalScore;
+						bestX = x;
+						bestY = y;
+					}
+				}
+			}
+		}
+
+		if (bestX != -1 && bestY != -1)
+		{
+			// AI落子
+			m_aChess[m_nChess].Set(m_nChess, bestX, bestY, m_Color);
+			m_nChess++;
+			m_Color = (m_Color == WHITE ? BLACK : WHITE);
+		}
+	}
+}
+
+void CChessManager::Undo()
+{
+	if (m_nChess > 0) {
+		m_nChess--;
+		m_Color = (m_Color == WHITE ? BLACK : WHITE);
+	}
+}
+
 void CChessManager::IncrementCurrentPlayerTime()
 {
 	if (m_Color == BLACK) {
@@ -49,6 +96,55 @@ void CChessManager::IncrementCurrentPlayerTime()
 		m_whiteTime++;
 	}
 }
+
+long CChessManager::GetScore(int x, int y, COLOR color)
+{
+	long totalScore = 0;
+	int directions[4][2] = { {1, 0}, {0, 1}, {1, 1}, {1, -1} }; // 水平, 垂直, 右斜, 左斜
+
+	for (int i = 0; i < 4; i++)
+	{
+		int count = 1;    // 连续棋子数
+		int openEnds = 0; // 开放端数
+
+		// 正方向
+		for (int j = 1; j < WIN_NUM; j++)
+		{
+			CChess* qz = GetQz(x + j * directions[i][0], y + j * directions[i][1]);
+			if (qz && qz->GetColor() == color)
+				count++;
+			else
+			{
+				if (qz == nullptr) openEnds++;
+				break;
+			}
+		}
+
+		// 反方向
+		for (int j = 1; j < WIN_NUM; j++)
+		{
+			CChess* qz = GetQz(x - j * directions[i][0], y - j * directions[i][1]);
+			if (qz && qz->GetColor() == color)
+				count++;
+			else
+			{
+				if (qz == nullptr) openEnds++;
+				break;
+			}
+		}
+
+		if (count >= WIN_NUM) totalScore += 100000; // 连五
+		else if (count == 4 && openEnds == 2) totalScore += 10000; // 活四
+		else if (count == 4 && openEnds == 1) totalScore += 1000;  // 死四
+		else if (count == 3 && openEnds == 2) totalScore += 1000;  // 活三
+		else if (count == 3 && openEnds == 1) totalScore += 100;   // 死三
+		else if (count == 2 && openEnds == 2) totalScore += 100;   // 活二
+		else if (count == 2 && openEnds == 1) totalScore += 10;    // 死二
+		else if (count == 1 && openEnds == 2) totalScore += 10;    // 活一
+	}
+	return totalScore;
+}
+
 void CChessManager::Show(CDC* pDC) {	//显示所有落子
 	for (int i = 0; i < m_nChess; i++)
 		m_aChess[i].Show(pDC);
@@ -186,10 +282,3 @@ bool CChessManager::CheckRSlash() {
 	}
 	return false;
 }
-void CChessManager::Undo()
-{
-	if (m_nChess > 0) {
-		m_nChess--;
-		m_Color = (m_Color == WHITE ? BLACK : WHITE);
-	}
-} 
