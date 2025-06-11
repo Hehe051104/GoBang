@@ -120,9 +120,24 @@ void CGoBangView::OnDraw(CDC* pDC)
 	pDC->TextOut(20, 20, blackTimeStr);
 	pDC->TextOut(20, 40, whiteTimeStr);
 
+	// 绘制局势评估条
+	long blackScore, whiteScore;
+	m_chess.GetBoardScore(blackScore, whiteScore);
+	long totalScore = blackScore + whiteScore;
+	if (totalScore > 0)
+	{
+		CRect scoreBarRect(20, 70, 220, 90);
+		pDC->FillSolidRect(scoreBarRect, RGB(255, 255, 255)); // 背景
+		
+		int blackWidth = (int)(200.0 * blackScore / totalScore);
+		pDC->FillSolidRect(CRect(20, 70, 20 + blackWidth, 90), RGB(0, 0, 0));
+	}
+
 	if (m_isGameOver) {
 		CString str;
-		str.Format(_T("%s win!"), m_chess.GetWinner() == BLACK ? _T("Black") : _T("White"));
+		str.Format(_T("%s win!\n\nFinal Score:\nBlack: %ld\nWhite: %ld"), 
+			m_chess.GetWinner() == BLACK ? _T("Black") : _T("White"),
+			blackScore, whiteScore);
 		MessageBox(str);
 	}
 }
@@ -224,9 +239,9 @@ void CGoBangView::OnTimer(UINT_PTR nIDEvent)
 {
 	if (nIDEvent == 1 && !m_isGameOver) {
 		m_chess.IncrementCurrentPlayerTime();
-		// 只重绘计时器区域，避免闪烁
-		CRect timerRect(20, 20, 200, 60);
-		InvalidateRect(&timerRect, FALSE);
+		// 只重绘计时器和评分条区域
+		CRect updateRect(20, 20, 220, 100);
+		InvalidateRect(&updateRect, FALSE);
 	}
 	CView::OnTimer(nIDEvent);
 }

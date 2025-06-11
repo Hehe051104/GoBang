@@ -41,4 +41,5 @@ public:
 	void SetDifficulty(AIDifficulty difficulty) { m_aiDifficulty = difficulty; }
 	AIDifficulty GetDifficulty() const { return m_aiDifficulty; }
 	void IncrementCurrentPlayerTime();			//增加当前走棋方用时
+	void GetBoardScore(long& blackScore, long& whiteScore); // 获取棋盘总分
 }; 

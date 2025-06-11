@@ -124,6 +124,23 @@ void CChessManager::IncrementCurrentPlayerTime()
 	}
 }
 
+void CChessManager::GetBoardScore(long& blackScore, long& whiteScore)
+{
+	blackScore = 0;
+	whiteScore = 0;
+	for (int y = 0; y < MAX_ROWS; y++)
+	{
+		for (int x = 0; x < MAX_COLS; x++)
+		{
+			if (GetQz(x, y) == nullptr)
+			{
+				blackScore += GetScore(x, y, BLACK);
+				whiteScore += GetScore(x, y, WHITE);
+			}
+		}
+	}
+}
+
 long CChessManager::GetScore(int x, int y, COLOR color)
 {
 	long totalScore = 0;
