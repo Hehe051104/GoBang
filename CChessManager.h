@@ -7,6 +7,7 @@
 #define WIN_NUM		5
 
 enum GameMode { PVP, PVE };
+enum AIDifficulty { EASY, MEDIUM, HARD };
 
 class CChessManager {
 	CChess m_aChess[MAX_CHESS];	//保存落子信息对象数组
@@ -15,6 +16,7 @@ class CChessManager {
 	int m_blackTime;		//黑方用时，单位：秒
 	int m_whiteTime;		//白方用时，单位：秒
 	GameMode m_gameMode;	//游戏模式
+	AIDifficulty m_aiDifficulty; // AI难度
 	long GetScore(int x, int y, COLOR color); // AI评分函数
 	bool CheckRows();				//检查行是否达到赢棋标准
 	bool CheckCols();				//检查列是否达到赢棋标准
@@ -24,7 +26,7 @@ class CChessManager {
 public:
 	CChessManager();
 	~CChessManager();
-	void NewGame(GameMode mode = PVP);
+	void NewGame(GameMode mode = PVP, AIDifficulty difficulty = MEDIUM);
 	bool Xy2Xy(int x0, int y0, int& x1, int& y1);
 	int Add(int x, int y);
 	void Show(CDC* pDC);
@@ -36,5 +38,7 @@ public:
 	int GetBlackTime() { return m_blackTime; }	//获取黑方用时
 	int GetWhiteTime() { return m_whiteTime; }	//获取白方用时
 	GameMode GetGameMode() { return m_gameMode; }
+	void SetDifficulty(AIDifficulty difficulty) { m_aiDifficulty = difficulty; }
+	AIDifficulty GetDifficulty() const { return m_aiDifficulty; }
 	void IncrementCurrentPlayerTime();			//增加当前走棋方用时
 }; 

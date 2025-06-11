@@ -34,6 +34,12 @@ BEGIN_MESSAGE_MAP(CGoBangView, CView)
 	ON_COMMAND(ID_NEW_GAME_AI, &CGoBangView::OnNewGameAI)
 	ON_COMMAND(ID_EDIT_UNDO, &CGoBangView::OnUndo)
 	ON_WM_TIMER()
+	ON_COMMAND(ID_DIFFICULTY_EASY, &CGoBangView::OnDifficultyEasy)
+	ON_COMMAND(ID_DIFFICULTY_MEDIUM, &CGoBangView::OnDifficultyMedium)
+	ON_COMMAND(ID_DIFFICULTY_HARD, &CGoBangView::OnDifficultyHard)
+	ON_UPDATE_COMMAND_UI(ID_DIFFICULTY_EASY, &CGoBangView::OnUpdateDifficultyEasy)
+	ON_UPDATE_COMMAND_UI(ID_DIFFICULTY_MEDIUM, &CGoBangView::OnUpdateDifficultyMedium)
+	ON_UPDATE_COMMAND_UI(ID_DIFFICULTY_HARD, &CGoBangView::OnUpdateDifficultyHard)
 END_MESSAGE_MAP()
 
 // CGoBangView 构造/析构
@@ -235,7 +241,7 @@ void CGoBangView::OnNewGame()
 
 void CGoBangView::OnNewGameAI()
 {
-	m_chess.NewGame(PVE);
+	m_chess.NewGame(PVE, m_chess.GetDifficulty());
 	m_isGameOver = false;
 	Invalidate(false);
 }
@@ -247,4 +253,34 @@ void CGoBangView::OnUndo()
 		m_chess.Undo(); // 在PVE模式下，悔棋需要撤销两步（玩家和AI）
 	}
 	Invalidate(false);
+}
+
+void CGoBangView::OnDifficultyEasy()
+{
+	m_chess.SetDifficulty(EASY);
+}
+
+void CGoBangView::OnDifficultyMedium()
+{
+	m_chess.SetDifficulty(MEDIUM);
+}
+
+void CGoBangView::OnDifficultyHard()
+{
+	m_chess.SetDifficulty(HARD);
+}
+
+void CGoBangView::OnUpdateDifficultyEasy(CCmdUI* pCmdUI)
+{
+	pCmdUI->SetRadio(m_chess.GetDifficulty() == EASY);
+}
+
+void CGoBangView::OnUpdateDifficultyMedium(CCmdUI* pCmdUI)
+{
+	pCmdUI->SetRadio(m_chess.GetDifficulty() == MEDIUM);
+}
+
+void CGoBangView::OnUpdateDifficultyHard(CCmdUI* pCmdUI)
+{
+	pCmdUI->SetRadio(m_chess.GetDifficulty() == HARD);
 }

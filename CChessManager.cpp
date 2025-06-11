@@ -1,17 +1,31 @@
 #include "pch.h"
 #include "CChessManager.h"
 #include <cmath>
+#include <vector>
+#include <algorithm>
+
+struct Move
+{
+	int x, y;
+	long score;
+};
+
+bool compareMoves(const Move& a, const Move& b)
+{
+	return a.score > b.score;
+}
 
 CChessManager::CChessManager() {
 	NewGame();
 }
-void CChessManager::NewGame(GameMode mode)
+void CChessManager::NewGame(GameMode mode, AIDifficulty difficulty)
 {
 	m_nChess = 0;
 	m_Color = BLACK;
 	m_blackTime = 0;
 	m_whiteTime = 0;
 	m_gameMode = mode;
+	m_aiDifficulty = difficulty;
 }
 CChessManager::~CChessManager() {
 }
@@ -46,8 +60,7 @@ void CChessManager::AIMove()
 {
 	if (m_gameMode == PVE)
 	{
-		long maxScore = -1;
-		int bestX = -1, bestY = -1;
+		std::vector<Move> moves;
 
 		for (int y = 0; y < MAX_ROWS; y++)
 		{
@@ -57,17 +70,31 @@ void CChessManager::AIMove()
 				{
 					long aiScore = GetScore(x, y, m_Color);
 					long playerScore = GetScore(x, y, (m_Color == WHITE ? BLACK : WHITE));
-					long totalScore = aiScore + playerScore;
-
-					if (totalScore > maxScore)
-					{
-						maxScore = totalScore;
-						bestX = x;
-						bestY = y;
-					}
+					moves.push_back({ x, y, aiScore + playerScore });
 				}
 			}
 		}
+
+		std::sort(moves.begin(), moves.end(), compareMoves);
+
+		int bestX = -1, bestY = -1;
+
+		if (!moves.empty())
+		{
+			if (m_aiDifficulty == EASY)
+			{
+				int range = (std::min)((int)moves.size(), 5);
+				int choice = rand() % range;
+				bestX = moves[choice].x;
+				bestY = moves[choice].y;
+			}
+			else // MEDIUM and HARD
+			{
+				bestX = moves[0].x;
+				bestY = moves[0].y;
+			}
+		}
+
 
 		if (bestX != -1 && bestY != -1)
 		{

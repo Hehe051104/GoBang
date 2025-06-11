@@ -52,6 +52,12 @@ public:
 	afx_msg void OnNewGameAI();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnUndo();
+	afx_msg void OnDifficultyEasy();
+	afx_msg void OnDifficultyMedium();
+	afx_msg void OnDifficultyHard();
+	afx_msg void OnUpdateDifficultyEasy(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateDifficultyMedium(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateDifficultyHard(CCmdUI* pCmdUI);
 };
 
 #ifndef _DEBUG  // GoBangView.cpp 中的调试版本
